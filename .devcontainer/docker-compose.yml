@@ -1,5 +1,8 @@
 version: '2.1'
 
+volumes:
+  qa-game-mysql-local-data:
+
 networks:
   qa-network:
     name: qanetwork
@@ -18,3 +21,30 @@ services:
     networks:
       - qa-network
     user: mmanez
+    mem_limit: 1024m
+    environment:
+      - SPRING_PROFILES_ACTIVE=dockerlocal
+    depends_on:
+      db:
+        condition: service_healthy
+  db:
+    container_name: qa-game-mysql-local
+    image: mysql:8.2.0
+    mem_limit: 512m
+    ports:
+      - "3311:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=qa-game-db
+      - MYSQL_USER=user
+      - MYSQL_PASSWORD=pwd
+      - TZ=UTC
+    healthcheck:
+      test: "/usr/bin/mysql --user=user --password=pwd --execute \"SHOW DATABASES;\""
+      interval: 5s
+      timeout: 2s
+      retries: 60
+    networks:
+      - qa-network
+    volumes:
+      - qa-game-mysql-local-data:/var/lib/mysql

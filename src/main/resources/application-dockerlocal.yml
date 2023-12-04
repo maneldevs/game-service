@@ -1,0 +1,6 @@
+spring:
+  datasource:
+    url: jdbc:mysql://qa-game-mysql-local:3306/qa-game-db
+    username: user
+    password: pwd
+    
